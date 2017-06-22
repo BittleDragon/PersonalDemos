@@ -59,4 +59,39 @@ public class StarrySkyView extends View {
         jupiterHeight = jupiter.getHeight();
 
     }
+
+    /**
+     * 星球
+     */
+    private class StarInfo {
+
+        // 缩放比例
+        float sizePercent;
+        // x位置
+        int xLocation;
+        // y位置
+        int yLocation;
+        // 透明度
+        float alpha;
+        // 漂浮方向
+        int direction;
+        // 漂浮速度
+        int speed;
+    }
+
+    /**
+     * 获取星球大小
+     */
+    private float getStarSize(float start, float end) {
+        float nextFloat = (float) Math.random();
+        if (start < nextFloat && nextFloat < end) {
+            return nextFloat;
+        } else {
+            // 如果不处于想要的数据段，则再随机一次，因为不断递归有风险
+            return (float) Math.random();
+        }
+
+    }
+
+
 }
