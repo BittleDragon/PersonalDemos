@@ -52,5 +52,10 @@ public class PlayMusicService extends Service {
                 mediaPlayer.release();
             }
         }
+
+        public void pauseMusic() {
+            if (mediaPlayer != null)
+                mediaPlayer.pause();
+        }
     }
 }
