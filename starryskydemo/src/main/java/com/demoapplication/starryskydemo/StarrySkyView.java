@@ -1,18 +1,22 @@
 package com.demoapplication.starryskydemo;
 
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
+import android.view.animation.AccelerateInterpolator;
 
-import com.orhanobut.logger.Logger;
-
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -30,6 +34,8 @@ public class StarrySkyView extends View {
 
     private Bitmap jupiter;//木星
 
+    private Bitmap mars;//火星
+
     private int backWidth;
     private int backHeight;
 
@@ -38,6 +44,9 @@ public class StarrySkyView extends View {
 
     private int jupiterWidth;
     private int jupiterHeight;
+
+    private int marsWidth;
+    private int marsHeight;
 
     private int mFloatTransLowSpeed;
     private int mFloatTransMidSpeed;
@@ -50,9 +59,9 @@ public class StarrySkyView extends View {
 
     private int mStarCount = 8;
 
-    private static final float[][] STAR_LOCATION = new float[][] {
-            {0.5f, 0.2f}, {0.68f, 0.35f}, {0.5f, 0.05f},
-            {0.15f, 0.15f}, {0.5f, 0.5f}, {0.15f, 0.8f},
+    private static final float[][] STAR_LOCATION = new float[][]{
+            {0.2f, 0.15f}, {0.35f, 0.35f}, {0.5f, 0.66f},
+            {0.8f, 0.76f}, {0.4f, 0.82f}, {0.75f, 0.9f},
             {0.2f, 0.3f}, {0.77f, 0.4f}, {0.75f, 0.5f},
             {0.8f, 0.55f}, {0.9f, 0.6f}, {0.1f, 0.7f},
             {0.1f, 0.1f}, {0.7f, 0.8f}, {0.5f, 0.6f}
@@ -65,14 +74,42 @@ public class StarrySkyView extends View {
 
     private Rect mStarOneSrcRect;
     private Rect mStarTwoSrcRect;
+    private Rect mStarThreeSrcRect;
+    private Rect backGroundSrcRect;
+    private Rect screenRect;
+
     /**
      * 绘图的画笔
      */
     private Paint paint;
     /**
-     * 画布
+     * 画笔
      */
     private Canvas canvas;
+    private MyHandler handler;
+    private ValueAnimator valueAnimator;
+
+    private static class MyHandler extends Handler {
+
+        private WeakReference<StarrySkyView> weakReference;
+
+        public MyHandler(StarrySkyView skyView) {
+            weakReference = new WeakReference<StarrySkyView>(skyView);
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            StarrySkyView starrySkyView = weakReference.get();
+            for (int i = 0; i < starrySkyView.mStarInfos.size(); i++) {
+                starrySkyView.setStarFloat(starrySkyView.mStarInfos.get(i));
+                if (starrySkyView.canvas != null)
+                    starrySkyView.drawStarDynamic(i, starrySkyView.mStarInfos.get(i),
+                            starrySkyView.canvas, starrySkyView.paint);
+                this.sendEmptyMessage(0);
+            }
+        }
+    }
 
     public StarrySkyView(Context context) {
         this(context, null);
@@ -100,7 +137,30 @@ public class StarrySkyView extends View {
 
         paint = new Paint();
 
+        screenRect = new Rect(0, 0, mTotalWidth, mTotalHeight);
 
+        handler = new MyHandler(this);
+
+        valueAnimator = ValueAnimator.ofInt(0,100);
+        valueAnimator.setDuration(10000);
+        valueAnimator.setInterpolator(new AccelerateInterpolator());
+        valueAnimator.setRepeatMode(ValueAnimator.RESTART);
+        valueAnimator.setRepeatCount(ValueAnimator.INFINITE);
+        valueAnimator.addUpdateListener(new AnimatorUpdateListener());
+
+    }
+
+    private class AnimatorUpdateListener implements ValueAnimator.AnimatorUpdateListener {
+
+        @Override
+        public void onAnimationUpdate(ValueAnimator animation) {
+            int value = (int) animation.getAnimatedValue();
+            Log.e("animator的值", String.valueOf(value));
+            for (int i = 0; i < mStarInfos.size(); i++) {
+                setStarFloat(mStarInfos.get(i));
+                postInvalidate();
+            }
+        }
     }
 
     /**
@@ -108,23 +168,30 @@ public class StarrySkyView extends View {
      */
     private void initBitmapInfo() {
 
-        backBitmap = ((BitmapDrawable)getResources().
+        backBitmap = ((BitmapDrawable) getResources().
                 getDrawable(R.mipmap.starry_sky)).getBitmap();
         backWidth = backBitmap.getWidth();
         backHeight = backBitmap.getHeight();
 
-        earth = ((BitmapDrawable)getResources().
+        earth = ((BitmapDrawable) getResources().
                 getDrawable(R.mipmap.earth)).getBitmap();
         earthWidth = earth.getWidth();
         earthHeight = earth.getHeight();
 
-        jupiter = ((BitmapDrawable)getResources().
+        jupiter = ((BitmapDrawable) getResources().
                 getDrawable(R.mipmap.jupiter)).getBitmap();
         jupiterWidth = jupiter.getWidth();
         jupiterHeight = jupiter.getHeight();
 
+        mars = ((BitmapDrawable) getResources().
+                getDrawable(R.mipmap.mars)).getBitmap();
+        marsWidth = mars.getWidth();
+        marsHeight = mars.getHeight();
+
         mStarOneSrcRect = new Rect(0, 0, earthWidth, earthHeight);
         mStarTwoSrcRect = new Rect(0, 0, jupiterWidth, jupiterHeight);
+        mStarThreeSrcRect = new Rect(0, 0, marsWidth, marsHeight);
+        backGroundSrcRect = new Rect(0, 0, backWidth, backHeight);
 
         initStarInfo();
     }
@@ -195,8 +262,8 @@ public class StarrySkyView extends View {
         Random random = new Random();
         for (int i = 0; i < mStarCount; i++) {
             // 获取星球大小比例
-            float starSize = getStarSize(0.4f, 0.9f);
-            // 初始化星球大小
+            float starSize = getStarSize(0.4f, 0.7f);
+            // 初始化星球
             float[] starLocation = STAR_LOCATION[i];
             starInfo = new StarInfo();
             starInfo.sizePercent = starSize;
@@ -223,9 +290,9 @@ public class StarrySkyView extends View {
             // 初始化星球位置
             starInfo.xLocation = (int) (starLocation[0] * mTotalWidth);
             starInfo.yLocation = (int) (starLocation[1] * mTotalHeight);
-            Logger.e("xLocation = " + starInfo.xLocation + "--yLocation = "
+            Log.e("位置信息", "xLocation = " + starInfo.xLocation + "--yLocation = "
                     + starInfo.yLocation);
-            Logger.e("stoneSize = " + starSize + "---stoneAlpha = "
+            Log.e("大小信息", "stoneSize = " + starSize + "---stoneAlpha = "
                     + starInfo.alpha);
             // 初始化星球方向
             starInfo.direction = getStarDirection();
@@ -238,6 +305,16 @@ public class StarrySkyView extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         this.canvas = canvas;
+        //首先绘制背景图
+        canvas.drawBitmap(backBitmap, backGroundSrcRect, screenRect, paint);
+        //绘制星球
+        for (int i = 0; i < mStarInfos.size(); i++) {
+            drawStarDynamic(i, mStarInfos.get(i), canvas, paint);
+        }
+    }
+
+    public void startMoving() {
+        valueAnimator.start();
     }
 
     private void drawStarDynamic(int count, StarInfo starInfo,
@@ -251,8 +328,8 @@ public class StarrySkyView extends View {
         xLocation = (int) (xLocation / sizePercent);
         yLocation = (int) (yLocation / sizePercent);
 
-        Bitmap bitmap = null;
-        Rect srcRect = null;
+        Bitmap bitmap;
+        Rect srcRect;
         Rect destRect = new Rect();
 
         if (count % 3 == 0) {
@@ -266,13 +343,13 @@ public class StarrySkyView extends View {
             destRect.set(xLocation, yLocation, xLocation
                     + jupiterWidth, yLocation + jupiterHeight);
         } else {
-            bitmap = earth;
-            srcRect = mStarOneSrcRect;
+            bitmap = mars;
+            srcRect = mStarThreeSrcRect;
             destRect.set(xLocation, yLocation, xLocation
-                    + earthWidth, yLocation + earthHeight);
+                    + marsWidth, yLocation + marsHeight);
         }
 
-        paint.setAlpha((int) (starAlpha * 255));
+//        paint.setAlpha((int) (starAlpha * 255));
         canvas.save();
         canvas.scale(sizePercent, sizePercent);
         canvas.drawBitmap(bitmap, srcRect, destRect, paint);
@@ -280,22 +357,36 @@ public class StarrySkyView extends View {
 
     }
 
-    private void resetStarFloat(StarInfo starInfo) {
+    /**
+     * 动态改变星球位置
+     *
+     * @param starInfo
+     */
+    private void setStarFloat(StarInfo starInfo) {
         switch (starInfo.direction) {
             case LEFT:
                 starInfo.xLocation -= starInfo.speed;
+                if (starInfo.xLocation < 0)
+                    starInfo.xLocation = mTotalWidth;
                 break;
             case RIGHT:
                 starInfo.xLocation += starInfo.speed;
+                if (starInfo.xLocation > mTotalWidth)
+                    starInfo.xLocation = 0;
                 break;
             case TOP:
                 starInfo.yLocation -= starInfo.speed;
+                if (starInfo.yLocation < 0)
+                    starInfo.yLocation = mTotalHeight;
                 break;
             case BOTTOM:
                 starInfo.yLocation += starInfo.speed;
+                if (starInfo.yLocation > mTotalHeight)
+                    starInfo.yLocation = 0;
                 break;
             default:
                 break;
         }
     }
+
 }
