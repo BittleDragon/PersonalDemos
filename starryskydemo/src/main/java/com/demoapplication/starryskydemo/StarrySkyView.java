@@ -13,6 +13,7 @@ import android.view.View;
 
 import com.orhanobut.logger.Logger;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -57,10 +58,21 @@ public class StarrySkyView extends View {
             {0.1f, 0.1f}, {0.7f, 0.8f}, {0.5f, 0.6f}
     };
 
-    private List<StarInfo> mStarInfos;
+    private List<StarInfo> mStarInfos = new ArrayList<>();
 
     private int mTotalWidth;
     private int mTotalHeight;
+
+    private Rect mStarOneSrcRect;
+    private Rect mStarTwoSrcRect;
+    /**
+     * 绘图的画笔
+     */
+    private Paint paint;
+    /**
+     * 画布
+     */
+    private Canvas canvas;
 
     public StarrySkyView(Context context) {
         this(context, null);
@@ -73,8 +85,6 @@ public class StarrySkyView extends View {
     public StarrySkyView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
-        initBitmapInfo();
-
         //初始化三种星球移动速度
         mFloatTransLowSpeed = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 0.5f,
                 getResources().getDisplayMetrics());
@@ -85,6 +95,12 @@ public class StarrySkyView extends View {
 
         mTotalWidth = getResources().getDisplayMetrics().widthPixels;
         mTotalHeight = getResources().getDisplayMetrics().heightPixels;
+
+        initBitmapInfo();
+
+        paint = new Paint();
+
+
     }
 
     /**
@@ -106,6 +122,11 @@ public class StarrySkyView extends View {
                 getDrawable(R.mipmap.jupiter)).getBitmap();
         jupiterWidth = jupiter.getWidth();
         jupiterHeight = jupiter.getHeight();
+
+        mStarOneSrcRect = new Rect(0, 0, earthWidth, earthHeight);
+        mStarTwoSrcRect = new Rect(0, 0, jupiterWidth, jupiterHeight);
+
+        initStarInfo();
     }
 
     /**
@@ -206,11 +227,17 @@ public class StarrySkyView extends View {
                     + starInfo.yLocation);
             Logger.e("stoneSize = " + starSize + "---stoneAlpha = "
                     + starInfo.alpha);
-            // 初始化星球位置
+            // 初始化星球方向
             starInfo.direction = getStarDirection();
             mStarInfos.add(starInfo);
         }
 
+    }
+
+    @Override
+    protected void onDraw(Canvas canvas) {
+        super.onDraw(canvas);
+        this.canvas = canvas;
     }
 
     private void drawStarDynamic(int count, StarInfo starInfo,
@@ -229,22 +256,20 @@ public class StarrySkyView extends View {
         Rect destRect = new Rect();
 
         if (count % 3 == 0) {
-
-//            bitmap = earth;
-//            srcRect = mStarOneSrcRect;
-//            destRect.set(xLocation, yLocation,
-//                    xLocation + mStarOneWidth, yLocation
-//                            + mStarOneHeight);
+            bitmap = earth;
+            srcRect = mStarOneSrcRect;
+            destRect.set(xLocation, yLocation, xLocation +
+                    earthWidth, yLocation + earthHeight);
         } else if (count % 2 == 0) {
-//            bitmap = jupiter;
-//            srcRect = mStarThreeSrcRect;
-//            destRect.set(xLocation, yLocation, xLocation
-//                    + mStarThreeWidth, yLocation + mStarThreeHeight);
+            bitmap = jupiter;
+            srcRect = mStarTwoSrcRect;
+            destRect.set(xLocation, yLocation, xLocation
+                    + jupiterWidth, yLocation + jupiterHeight);
         } else {
-//            bitmap = earth;
-//            srcRect = mStarTwoSrcRect;
-//            destRect.set(xLocation, yLocation, xLocation
-//                    + mStarTwoWidth, yLocation + mStarTwoHeight);
+            bitmap = earth;
+            srcRect = mStarOneSrcRect;
+            destRect.set(xLocation, yLocation, xLocation
+                    + earthWidth, yLocation + earthHeight);
         }
 
         paint.setAlpha((int) (starAlpha * 255));
@@ -253,5 +278,24 @@ public class StarrySkyView extends View {
         canvas.drawBitmap(bitmap, srcRect, destRect, paint);
         canvas.restore();
 
+    }
+
+    private void resetStarFloat(StarInfo starInfo) {
+        switch (starInfo.direction) {
+            case LEFT:
+                starInfo.xLocation -= starInfo.speed;
+                break;
+            case RIGHT:
+                starInfo.xLocation += starInfo.speed;
+                break;
+            case TOP:
+                starInfo.yLocation -= starInfo.speed;
+                break;
+            case BOTTOM:
+                starInfo.yLocation += starInfo.speed;
+                break;
+            default:
+                break;
+        }
     }
 }
