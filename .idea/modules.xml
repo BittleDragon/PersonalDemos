@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/SampleApplication.iml" filepath="$PROJECT_DIR$/SampleApplication.iml" />
+      <module fileurl="file://$PROJECT_DIR$/databasedemo/databasedemo.iml" filepath="$PROJECT_DIR$/databasedemo/databasedemo.iml" />
       <module fileurl="file://$PROJECT_DIR$/dataiodemo/dataiodemo.iml" filepath="$PROJECT_DIR$/dataiodemo/dataiodemo.iml" />
       <module fileurl="file://$PROJECT_DIR$/starryskydemo/starryskydemo.iml" filepath="$PROJECT_DIR$/starryskydemo/starryskydemo.iml" />
     </modules>

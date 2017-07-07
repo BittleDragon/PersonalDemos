@@ -1,1 +1,1 @@
-include ':starryskydemo', ':dataiodemo'
+include ':starryskydemo', ':dataiodemo', ':databasedemo'

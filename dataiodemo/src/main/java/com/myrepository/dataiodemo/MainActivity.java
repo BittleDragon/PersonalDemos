@@ -2,6 +2,7 @@ package com.myrepository.dataiodemo;
 
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Looper;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -11,10 +12,13 @@ import android.widget.Toast;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -29,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.scan)
     Button scan;
     private String filepath;
+    private List<String> txtfiles;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,8 +105,39 @@ public class MainActivity extends AppCompatActivity {
      * 扫描文件
      */
     private void scan() {
-        String aa = "dfaoiewjrgf";
-        byte[] bytes = aa.getBytes();
+        Toast.makeText(this, "开始扫描txt文件", Toast.LENGTH_SHORT).show();
+        txtfiles = new ArrayList<>();
+        String sdCardPath = Environment.getExternalStorageDirectory().getAbsolutePath();
+        final File sdDirectory = new File(sdCardPath);
+        new Thread() {
+            @Override
+            public void run() {
+                Looper.prepare();
+                scanTxtfiles(sdDirectory);
+                Toast.makeText(MainActivity.this, "扫描完成", Toast.LENGTH_SHORT).show();
+                Log.e("共扫描到text文件", txtfiles.size() + "个");
+                for (String path : txtfiles)
+                    Log.e("txt文件路径", path);
+                Looper.loop();
+
+            }
+        }.start();
+
+    }
+
+    private void scanTxtfiles(File sdDirectory) {
+        if (sdDirectory.isDirectory()) {
+            File[] files = sdDirectory.listFiles();
+            for (File file : files) {
+                if (file.isFile()) {
+                    if (file.getName().endsWith(".txt")) {
+                        txtfiles.add(file.getAbsolutePath());
+                    }
+                }else {
+                    scanTxtfiles(file);
+                }
+            }
+        }
     }
 
     /**
