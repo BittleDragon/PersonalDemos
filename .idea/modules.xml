@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/SampleApplication.iml" filepath="$PROJECT_DIR$/SampleApplication.iml" />
+      <module fileurl="file://$PROJECT_DIR$/PersonalDemos.iml" filepath="$PROJECT_DIR$/PersonalDemos.iml" />
       <module fileurl="file://$PROJECT_DIR$/databasedemo/databasedemo.iml" filepath="$PROJECT_DIR$/databasedemo/databasedemo.iml" />
       <module fileurl="file://$PROJECT_DIR$/dataiodemo/dataiodemo.iml" filepath="$PROJECT_DIR$/dataiodemo/dataiodemo.iml" />
       <module fileurl="file://$PROJECT_DIR$/starryskydemo/starryskydemo.iml" filepath="$PROJECT_DIR$/starryskydemo/starryskydemo.iml" />
