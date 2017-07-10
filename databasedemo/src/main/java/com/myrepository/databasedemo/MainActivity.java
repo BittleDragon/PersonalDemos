@@ -1,6 +1,7 @@
 package com.myrepository.databasedemo;
 
 import android.content.ContentValues;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -25,6 +26,8 @@ public class MainActivity extends AppCompatActivity {
     Button updateData;
     @BindView(R.id.query_data)
     Button queryData;
+    @BindView(R.id.litepalActivity)
+    Button litepal;
     private DatabaseHelper helper;
     private SQLiteDatabase bookstoreDB;
 
@@ -33,11 +36,12 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        helper = new DatabaseHelper(this, "BookStore.db", null, 2);
+        helper = new DatabaseHelper(this, "BookStore.db", null, 3);
 //        bookstoreDB = helper.getWritableDatabase();
     }
 
-    @OnClick({R.id.create_db, R.id.add_data,R.id.delete_data, R.id.update_data, R.id.query_data})
+    @OnClick({R.id.create_db, R.id.add_data,R.id.delete_data, R.id.update_data, R.id.query_data,
+            R.id.litepalActivity})
     public void onViewClicked(View view) {
         bookstoreDB = helper.getWritableDatabase();
         switch (view.getId()) {
@@ -54,6 +58,9 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case R.id.query_data:
                 queryData();
+                break;
+            case R.id.litepalActivity:
+                startActivity(new Intent(this, LitepalActivity.class));
                 break;
         }
         bookstoreDB.close();
@@ -124,7 +131,6 @@ public class MainActivity extends AppCompatActivity {
 //                Log.e("价格", price + "");
                 Log.e("数据内容", id + "****" + name + "****" + price);
             } while (cusor.moveToNext());
-
         }
         cusor.close();
     }
