@@ -31,6 +31,13 @@ public class PlayMusicService extends Service {
             mediaPlayer = new MediaPlayer();
     }
 
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.e("onStartCommand", "执行了");
+        playMusic();
+        return super.onStartCommand(intent, flags, startId);
+    }
+
     private void playMusic() {
         if (mediaPlayer != null && !mediaPlayer.isPlaying()) {
             Log.e("播放音乐", "执行了");

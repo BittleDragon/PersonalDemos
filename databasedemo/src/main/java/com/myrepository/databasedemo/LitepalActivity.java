@@ -81,6 +81,7 @@ public class LitepalActivity extends AppCompatActivity {
         Fruit updateFruit = DataSupport.find(Fruit.class, 9);
         updateFruit.setPrice(15.99d);
         updateFruit.save();
+        Toast.makeText(this, "数据修改了", Toast.LENGTH_SHORT).show();
     }
 
     private void deleteData() {

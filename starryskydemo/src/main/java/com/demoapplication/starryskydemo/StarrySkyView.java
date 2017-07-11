@@ -10,7 +10,6 @@ import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.animation.AccelerateInterpolator;
@@ -123,7 +122,7 @@ public class StarrySkyView extends View {
 
         @Override
         public void onAnimationUpdate(ValueAnimator animation) {
-            Log.e("动画值", (int)animation.getAnimatedValue() + "");
+//            Log.e("动画值", (int)animation.getAnimatedValue() + "");
             for (int i = 0; i < mStarInfos.size(); i++) {
                 setStarFloat(mStarInfos.get(i));
                 postInvalidate();
@@ -261,10 +260,10 @@ public class StarrySkyView extends View {
             // 初始化星球位置
             starInfo.xLocation = (int) (starLocation[0] * mTotalWidth);
             starInfo.yLocation = (int) (starLocation[1] * mTotalHeight);
-            Log.e("位置信息", "xLocation = " + starInfo.xLocation + "--yLocation = "
-                    + starInfo.yLocation);
-            Log.e("大小信息", "stoneSize = " + starSize + "---stoneAlpha = "
-                    + starInfo.alpha);
+//            Log.e("位置信息", "xLocation = " + starInfo.xLocation + "--yLocation = "
+//                    + starInfo.yLocation);
+//            Log.e("大小信息", "stoneSize = " + starSize + "---stoneAlpha = "
+//                    + starInfo.alpha);
             // 初始化星球方向
             starInfo.direction = getStarDirection();
             //初始化星球旋转角度

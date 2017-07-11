@@ -31,6 +31,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         }
     };
+    private Intent intent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,8 +40,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ButterKnife.bind(this);
 
         starryskyview.startMoving();
-        Intent intent = new Intent(this, PlayMusicService.class);
+        intent = new Intent(this, PlayMusicService.class);
         bindService(intent, connection, BIND_AUTO_CREATE);
+//        startService(intent);
 
         starryskyview.setOnClickListener(this);
     }
@@ -49,12 +51,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onDestroy() {
         super.onDestroy();
         Log.e("ondestroy", "被调用了");
-//        binder.startPlayMusic();
         unbindService(connection);
+        stopService(intent);
     }
 
     @Override
     public void onClick(View v) {
+        Log.e("点击事件", "执行了");
+//        startService(intent);
         if (binder != null)
             binder.playOrPauseMusic();
         starryskyview.pauseOrContinueMoving();
