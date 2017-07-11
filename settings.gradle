@@ -1,1 +1,1 @@
-include ':starryskydemo', ':dataiodemo', ':databasedemo', ':timeschedulesample'
+include ':starryskydemo', ':dataiodemo', ':databasedemo', ':timeschedulesample', ':rxjavasample'
