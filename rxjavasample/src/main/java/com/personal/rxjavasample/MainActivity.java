@@ -50,6 +50,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                     @Override
                     public void onNext(@NonNull String integer) {
+                        //打印进程
                         ToastUtils.show(MainActivity.this, integer);
                     }
 
