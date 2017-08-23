@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">fractionview</string>
+    <string name="save">保存</string>
+    <string name="cancel">取消</string>
+    <string name="describe_sample">请简单描述样品</string>
+    <string name="way_send">请填写取送样方式</string>
+    <string name="test_condition">请填写测试条件</string>
 </resources>

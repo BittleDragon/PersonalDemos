@@ -68,13 +68,14 @@ public class MainActivity extends AppCompatActivity {
                 bos.write(buffer, 0, b);
             }
 
+            bos.flush();
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
             try {
                 bis.close();
                 if (bos != null) {
-                    bos.flush();
+
                     bos.close();
                     Log.e("复制完成", ".......");
                 }
