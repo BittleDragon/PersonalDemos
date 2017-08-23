@@ -1,4 +1,4 @@
-package com.example.widgettest;
+package com.lollipop.widgettestsample;
 
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
@@ -12,7 +12,12 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener{
+/**
+ * 旋转的shape图形充当progressbar，snackbar的使用
+ * Created by raoxuting on 2017/8/23.
+ */
+
+public class RotateShapeActivity extends AppCompatActivity implements View.OnClickListener{
 
     @BindView(R.id.pb)
     ProgressBar pb;
@@ -22,7 +27,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_rotate_shape);
         ButterKnife.bind(this);
     }
 
