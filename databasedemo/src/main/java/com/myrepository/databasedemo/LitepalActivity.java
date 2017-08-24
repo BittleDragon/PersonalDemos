@@ -38,6 +38,7 @@ public class LitepalActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_litepal);
         ButterKnife.bind(this);
+
     }
 
     @OnClick({R.id.create, R.id.insert, R.id.delete, R.id.update, R.id.query})

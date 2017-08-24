@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
         if (Build.VERSION.SDK_INT >= 23) {
             checkPermissionsInNeed();
         } else
-            takePhoto();
+            capture();
     }
 
     private void checkPermissionsInNeed() {
@@ -69,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
                         (this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
             }
         } else {
-            takePhoto();
+            capture();
         }
     }
 
@@ -80,18 +80,19 @@ public class MainActivity extends AppCompatActivity {
                     (Environment.DIRECTORY_PICTURES).getAbsolutePath(); //+ File.separator + "temp_picture.jpg";
             SimpleDateFormat ft = new SimpleDateFormat("yyyyMMddhhmmss");
             String currentTime = ft.format(new Date(System.currentTimeMillis()));
-            String filePath = directoryPath + File.separator + currentTime + ".jpg";
-            Log.e("文件路径", filePath);
-            tempFile = new File(filePath);
-            if (!tempFile.exists()) {
-                tempFile.mkdir();
-                Log.e("tag", "生成文件");
-            }
-//            try {
-//                tempFile.createNewFile();
-//            } catch (IOException e) {
-//                e.printStackTrace();
+//            String filePath = directoryPath + File.separator + currentTime + ".jpg";
+//            Log.e("文件路径", filePath);
+            tempFile = new File(Environment.getExternalStoragePublicDirectory
+                    (Environment.DIRECTORY_PICTURES), currentTime + ".jpg");
+//            if (!tempFile.exists()) {
+//                tempFile.mkdir();
+//                Log.e("tag", "生成文件");
 //            }
+            try {
+                tempFile.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             Uri uri = FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID + ".sharedfile",
                     tempFile);
             cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
@@ -143,7 +144,7 @@ public class MainActivity extends AppCompatActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             //已授权
-            takePhoto();
+            capture();
         }
     }
 }
