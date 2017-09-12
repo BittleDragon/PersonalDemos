@@ -32,9 +32,9 @@
     	</list>
     -->
     <list>
-        <mapping class="com.myrepository.databasedemo.models.Fruit"/>
-        <mapping class="com.myrepository.databasedemo.models.FruitsCategory"/>
-        <mapping class="com.myrepository.databasedemo.models.SupplyCompanies"/>
+        <mapping class="com.rxt.databasedemo.models.Fruit"/>
+        <mapping class="com.rxt.databasedemo.models.FruitsCategory"/>
+        <mapping class="com.rxt.databasedemo.models.SupplyCompanies"/>
     </list>
     
     <!--
