@@ -17,5 +17,21 @@
         android:layout_height="wrap_content"
         android:text="map操作符"/>
 
+    <Button
+        android:id="@+id/btn_zip"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="zip操作符"/>
     
+    <Button
+        android:id="@+id/btn_sample_filter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="sample/filter"/>
+    
+    <Button
+        android:id="@+id/btn_flowable"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="flowable"/>
 </LinearLayout>
