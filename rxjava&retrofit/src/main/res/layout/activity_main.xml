@@ -34,4 +34,16 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="flowable"/>
+    
+    <Button
+        android:id="@+id/btn_concat"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="concat"/>
+    
+    <Button
+        android:id="@+id/btn_all_in_one"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="all in one"/>
 </LinearLayout>

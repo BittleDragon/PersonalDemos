@@ -1,1 +1,1 @@
-include ':starryskydemo', ':dataiodemo', ':databasedemo', ':timeschedulesample', ':rxjavasample', ':widgettestsample', 'fractionview'
+include ':starryskydemo', ':dataiodemo', ':databasedemo', ':timeschedulesample', ':rxjava&retrofit', ':widgettestsample', 'fractionview'

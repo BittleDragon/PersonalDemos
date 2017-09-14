@@ -43,18 +43,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Button zipbtn = (Button) findViewById(R.id.btn_zip);
         Button sampleFilter = (Button) findViewById(R.id.btn_sample_filter);
         Button flowable = (Button) findViewById(R.id.btn_flowable);
+        Button concat = (Button) findViewById(R.id.btn_concat);
+        Button allinOne = (Button) findViewById(R.id.btn_all_in_one);
         primary.setOnClickListener(this);
         mapOperation.setOnClickListener(this);
         zipbtn.setOnClickListener(this);
         sampleFilter.setOnClickListener(this);
         flowable.setOnClickListener(this);
+        concat.setOnClickListener(this);
+        allinOne.setOnClickListener(this);
 
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.btn_primary :
+            case R.id.btn_primary:
                 primary();
                 break;
             case R.id.btn_map:
@@ -69,15 +73,151 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.btn_flowable:
                 flowableTest();
                 break;
+            case R.id.btn_concat:
+                concatTest();
+                break;
+            case R.id.btn_all_in_one:
+                test();
+                break;
         }
 
+    }
+
+    private void test() {
+        //distinct
+//        Observable.create(new ObservableOnSubscribe<String>() {
+//            @Override
+//            public void subscribe(@NonNull ObservableEmitter<String> e) throws Exception {
+//                e.onNext("a");
+//                e.onNext("a");
+//                e.onNext("b");
+//                e.onNext("b");
+//                e.onNext("c");
+//                e.onComplete();
+//            }
+//        })
+//                .distinct()//去重
+//                .subscribeOn(Schedulers.newThread())
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribe(new Consumer<String>() {
+//                    @Override
+//                    public void accept(@NonNull String s) throws Exception {
+//                        Log.e(TAG, "accept: " + s);
+//                    }
+//                });
+
+        //buffer
+//        Observable.create(new ObservableOnSubscribe<Integer>() {
+//                        @Override
+//                        public void subscribe(@NonNull ObservableEmitter<Integer> e) throws Exception {
+//                            e.onNext(1);
+//                            e.onNext(2);
+//                            e.onNext(3);
+//                            e.onNext(4);
+//                            e.onNext(5);
+//                            e.onComplete();
+//                        }
+//                    })
+//                            .buffer(3, 2)//每次取3个事件，下一次拉取事件在前一次的基础上往后推2个
+//                .subscribeOn(Schedulers.io())
+//                            .observeOn(AndroidSchedulers.mainThread())
+//                            .subscribe(new Consumer<List<Integer>>() {
+//                        @Override
+//                        public void accept(@NonNull List<Integer> integers) throws Exception {
+//                            Log.e(TAG, "accept: " + integers.size());
+//                            for (Integer i : integers) {
+//                                Log.e(TAG, "value: " + i);
+//                            }
+//                        }
+//                });
+
+        //timer,延时发送
+//        Log.e(TAG, "startTime: ");
+//        Observable.timer(2, TimeUnit.SECONDS)
+//                .subscribeOn(Schedulers.newThread())
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribe(new Consumer<Long>() {
+//                    @Override
+//                    public void accept(@NonNull Long aLong) throws Exception {
+//                        Log.e(TAG, "endTime:");
+//                    }
+//                });
+
+        //interval,间隔发送long类型的数据，从0l开始
+        Observable.interval(0, 2, TimeUnit.SECONDS)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<Long>() {
+
+                    private Disposable md;
+
+                    @Override
+                    public void onSubscribe(@NonNull Disposable d) {
+                        md = d;
+                    }
+
+                    @Override
+                    public void onNext(@NonNull Long aLong) {
+                        Log.e(TAG, "accept: " + aLong);
+                        if (aLong == 5)
+                            md.dispose();
+                    }
+
+                    @Override
+                    public void onError(@NonNull Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        Log.e(TAG, "onComplete: ");
+                    }
+                });
+
+
+
+    }
+
+    private void concatTest() {
+        Observable<Integer> observable1 = Observable.create(new ObservableOnSubscribe<Integer>() {
+            @Override
+            public void subscribe(@NonNull ObservableEmitter<Integer> e) throws Exception {
+                e.onNext(1);
+                e.onNext(2);
+                e.onNext(3);
+                e.onNext(4);
+                e.onComplete();
+            }
+        });
+        Observable<Integer> observable2 = Observable.create(new ObservableOnSubscribe<Integer>() {
+            @Override
+            public void subscribe(@NonNull ObservableEmitter<Integer> e) throws Exception {
+                e.onNext(5);
+                e.onNext(6);
+                e.onNext(7);
+                e.onComplete();
+            }
+        });
+        Observable.concat(observable1, observable2)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<Integer>() {
+                    @Override
+                    public void accept(@NonNull Integer integer) throws Exception {
+                        Log.e(TAG, "accept: " + integer);
+                    }
+                });
     }
 
     private void flowableTest() {
         Flowable.create(new FlowableOnSubscribe<Integer>() {
             @Override
             public void subscribe(@NonNull FlowableEmitter<Integer> e) throws Exception {
-
+                e.onNext(1);
+                e.onNext(2);
+                e.onNext(3);
+                e.onNext(4);
+                e.onNext(5);
             }
         }, BackpressureStrategy.ERROR)//BackpressureStrategy.BUFFER:存储事件的容器无限大，类似于observable，有可能OOM
                 //BackpressureStrategy.DROP:超出下游处理能力的事件将被丢弃，不会存入容器造成OOM
@@ -115,13 +255,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
             }
         }).subscribeOn(Schedulers.io())
+                //过滤，上游事件有损失
 //                .filter(new Predicate<Integer>() {
 //                    @Override
 //                    public boolean test(@NonNull Integer integer) throws Exception {
 //                        return integer % 20 == 0;
 //                    }
 //                })
-                .sample(2, TimeUnit.SECONDS)
+                .sample(2, TimeUnit.SECONDS)//每两秒取样，上游事件有损失
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<Integer>() {
                     @Override
@@ -206,7 +347,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void mapTest(int flag) {
         switch (flag) {
-            case 1 :
+            case 1:
                 Observable.create(new ObservableOnSubscribe<Integer>() {
                     @Override
                     public void subscribe(@NonNull ObservableEmitter<Integer> e) throws Exception {
@@ -259,7 +400,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             }
                         });
                 break;
-            default :
+            default:
 
                 break;
         }

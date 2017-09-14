@@ -17,6 +17,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".UnitTestActivity"/>
+        <activity android:name=".RetrofitActivity"/>
     </application>
 
 </manifest>
