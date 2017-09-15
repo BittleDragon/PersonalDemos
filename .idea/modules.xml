@@ -6,7 +6,7 @@
       <module fileurl="file://$PROJECT_DIR$/databasedemo/databasedemo.iml" filepath="$PROJECT_DIR$/databasedemo/databasedemo.iml" />
       <module fileurl="file://$PROJECT_DIR$/dataiodemo/dataiodemo.iml" filepath="$PROJECT_DIR$/dataiodemo/dataiodemo.iml" />
       <module fileurl="file://$PROJECT_DIR$/fractionview/fractionview.iml" filepath="$PROJECT_DIR$/fractionview/fractionview.iml" />
-      <module fileurl="file://$PROJECT_DIR$/rxjava&amp;retrofit/rxjava&amp;retrofit.iml" filepath="$PROJECT_DIR$/rxjava&amp;retrofit/rxjava&amp;retrofit.iml" />
+      <module fileurl="file://$PROJECT_DIR$/rxjava_retrofit/rxjava_retrofit.iml" filepath="$PROJECT_DIR$/rxjava_retrofit/rxjava_retrofit.iml" />
       <module fileurl="file://$PROJECT_DIR$/starryskydemo/starryskydemo.iml" filepath="$PROJECT_DIR$/starryskydemo/starryskydemo.iml" />
       <module fileurl="file://$PROJECT_DIR$/timeschedulesample/timeschedulesample.iml" filepath="$PROJECT_DIR$/timeschedulesample/timeschedulesample.iml" />
       <module fileurl="file://$PROJECT_DIR$/widgettestsample/widgettestsample.iml" filepath="$PROJECT_DIR$/widgettestsample/widgettestsample.iml" />
