@@ -102,8 +102,9 @@ public class RetrofitActivity extends AppCompatActivity implements View.OnClickL
         SharedPreferences sp = getSharedPreferences("appsp", MODE_PRIVATE);
         int userid = sp.getInt("userid", 0);
         String token = sp.getString("token", null);
-        Log.e(TAG, "postTest: userid: " + userid);
+        if (userid != 0 && token != null) {
 
+        }
     }
 
     private void getTest() {
