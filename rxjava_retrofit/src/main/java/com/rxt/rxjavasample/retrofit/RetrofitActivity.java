@@ -158,28 +158,55 @@ public class RetrofitActivity extends AppCompatActivity implements View.OnClickL
         /*
         有参数
          */
-        Call<ResponseBody> solutionsCall = apiStore.getSolutions(page++);
-        solutionsCall.enqueue(new Callback<ResponseBody>() {
+//        Call<ResponseBody> solutionsCall = apiStore.getSolutions(page++);
+//        solutionsCall.enqueue(new Callback<ResponseBody>() {
+//            @Override
+//            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+//                try {
+//                    if (response.isSuccessful()) {
+//                        String result = response.body().string();
+//                        Log.e(TAG, "onResponse: successful: " + result);
+//                    } else {
+//                        String error = response.errorBody().string();
+//                        Log.e(TAG, "onResponse: error: " + error);
+//                    }
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(Call<ResponseBody> call, Throwable t) {
+//                t.printStackTrace();
+//            }
+//        });
+
+        /*
+        使用gsonConverter解析json数据
+         */
+        Retrofit retro = new Retrofit.Builder()
+                .baseUrl("http://wthrcdn.etouch.cn/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        ApiStore apis = retro.create(ApiStore.class);
+        Call<AreaJsonBean> weatherCall = apis.getWeather("杭州");
+        weatherCall.enqueue(new Callback<AreaJsonBean>() {
             @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                try {
-                    if (response.isSuccessful()) {
-                        String result = response.body().string();
-                        Log.e(TAG, "onResponse: successful: " + result);
-                    } else {
-                        String error = response.errorBody().string();
-                        Log.e(TAG, "onResponse: error: " + error);
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
+            public void onResponse(Call<AreaJsonBean> call, Response<AreaJsonBean> response) {
+                Log.e(TAG, "onResponse: 执行了");
+                if (response.isSuccessful()) {
+                    AreaJsonBean body = response.body();
+                    String city = body.getData().getCity();
+                    Log.e(TAG, "onResponse: " + city);
                 }
             }
 
             @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-                t.printStackTrace();
+            public void onFailure(Call<AreaJsonBean> call, Throwable t) {
+                Log.e(TAG, "onFailure: 执行了");
             }
         });
+
 
     }
 
