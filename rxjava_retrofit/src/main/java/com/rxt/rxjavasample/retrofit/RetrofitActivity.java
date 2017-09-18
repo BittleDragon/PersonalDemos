@@ -102,8 +102,46 @@ public class RetrofitActivity extends AppCompatActivity implements View.OnClickL
         SharedPreferences sp = getSharedPreferences("appsp", MODE_PRIVATE);
         int userid = sp.getInt("userid", 0);
         String token = sp.getString("token", null);
+        String header = "BasicAuth " + token;
+        AddressBean bean = new AddressBean();
+        bean.setRecipient("张飞");
+        bean.setTPIUserId(68879);
+        bean.setMobile(15925695081d);
+        bean.setAddress("开福区");
+        bean.setArea("430000, 430100");
+        Log.e(TAG, "postTest: " + userid + ", " + token);
         if (userid != 0 && token != null) {
+//            OkHttpClient client = new OkHttpClient.Builder()
+//                    .addInterceptor(new RetrofitInterceptor(token))
+//                    .build();
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl(ApiStore.baseUrl)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .callFactory(OkHttpUtils.obtainOkHttpClient(token))
+                    .build();
+            ApiStore apiStore = retrofit.create(ApiStore.class);
+            Call<ResponseBody> call = apiStore.addAddress(bean, header);
+            call.enqueue(new Callback<ResponseBody>() {
+                @Override
+                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                    try {
+                        if (response.isSuccessful()) {
+                            Log.e(TAG, "onResponse: " + response.body().string());
+                        } else {
+                            Log.e(TAG, "onResponse: code: " + response.code());
+                            Log.e(TAG, "onResponse: error: " + response.errorBody().string());
+                            Log.e(TAG, "onResponse: header: " + response.headers().toString());
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
 
+                @Override
+                public void onFailure(Call<ResponseBody> call, Throwable t) {
+                    Log.e(TAG, "onFailure: 执行了");
+                }
+            });
         }
     }
 
@@ -216,7 +254,7 @@ public class RetrofitActivity extends AppCompatActivity implements View.OnClickL
         try {
             Gson gson = new GsonBuilder().create();
             t = gson.fromJson(json, cls);
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return t;

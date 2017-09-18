@@ -4,6 +4,7 @@ import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
+import retrofit2.http.Header;
 import retrofit2.http.POST;
 import retrofit2.http.Query;
 
@@ -18,13 +19,14 @@ public interface ApiStore {
     @GET("api/TestService/getTestServiceList")
     Call<ResponseBody> getSolutions(@Query("page")int page);
 
-    @POST("api/User/PostInsertAddress")
-    Call<ResponseBody> addAddress(@Body AddressBean bean);
-
     @GET("api/Login/GetLogin")
     Call<ResponseBody> getUserInfo(@Query("strUserName")String userName,
                              @Query("strPwd")String password);
 
     @GET("weather_mini")
     Call<AreaJsonBean> getWeather(@Query("city")String cityname);
+
+    //    Call<ResponseBody> addAddress(@Header("Authorization")String header, @Body AddressBean bean);
+    @POST("api/User/PostInsertAddress")
+    Call<ResponseBody> addAddress(@Body AddressBean bean, @Header("Authorization")String authorization);
 }
