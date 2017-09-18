@@ -24,7 +24,7 @@ public class OkHttpUtils {
                 public Response intercept(Chain chain) throws IOException {
                     String headers = chain.request().headers().toString();
                     Log.e("拦截器", "intercept: " + headers);
-                    return null;
+                    return chain.proceed(chain.request());
                 }
             }).build();
         }
