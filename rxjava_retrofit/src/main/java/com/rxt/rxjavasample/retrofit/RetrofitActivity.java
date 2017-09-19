@@ -13,6 +13,9 @@ import com.google.gson.GsonBuilder;
 import com.rxt.rxjavasample.R;
 import com.rxt.rxjavasample.ToastUtils;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 
 import okhttp3.ResponseBody;
@@ -40,13 +43,16 @@ public class RetrofitActivity extends AppCompatActivity implements View.OnClickL
         Button test = (Button) findViewById(R.id.btn_get);
         Button post = (Button) findViewById(R.id.btn_post);
         Button login = (Button) findViewById(R.id.btn_login);
+        Button postNormal = (Button) findViewById(R.id.btn_post_normal);
         test.setOnClickListener(this);
         post.setOnClickListener(this);
         login.setOnClickListener(this);
+        postNormal.setOnClickListener(this);
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(ApiStore.baseUrl)
-                .addConverterFactory(GsonConverterFactory.create())
+                .addConverterFactory(new MyConverterFactory())
+                .callFactory(OkHttpUtils.getInstance().obtainOkHttpClient())
                 .build();
         apiStore = retrofit.create(ApiStore.class);
     }
@@ -62,42 +68,103 @@ public class RetrofitActivity extends AppCompatActivity implements View.OnClickL
                 break;
             case R.id.btn_login:
                 login();
-//                ToastUtils.show(this, "登录");
+                break;
+            case R.id.btn_post_normal:
+                postTest2();
                 break;
         }
     }
 
-    private void login() {
-        Call<ResponseBody> loginCall = apiStore.getUserInfo("hzcm", "123123");
-        loginCall.enqueue(new Callback<ResponseBody>() {
+    /**
+     * post请求体测试
+     */
+    private void postTest2() {
+        ReleaseBean bean = new ReleaseBean();
+        bean.setContactName("小乔");
+        bean.setContactTel(15946365920d);
+        bean.setQuestionContent("测试");
+
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("ContactName", "诸葛亮");
+            jsonObject.put("ContactTel", "15632198706");
+            jsonObject.put("QuestionContent", "测试");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
+        Call<ResponseBody> releaseCall = apiStore.release(jsonObject.toString());
+        releaseCall.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                Log.e(TAG, "onResponse: ");
+                try {
+                    if (response.isSuccessful()) {
+                        Log.e(TAG, "body: " + response.body().string());
+                    } else {
+                        Log.e(TAG, "出错了：errorCode: " + response.code() +
+                                "\n" + response.errorBody().string());
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Log.e(TAG, "onFailure: ");
+            }
+        });
+    }
+
+    private void login() {
+        Call<LoginData> loginCall = apiStore.getUserInfo("hzcm", "123123");
+        loginCall.enqueue(new Callback<LoginData>() {
+            @Override
+            public void onResponse(Call<LoginData> call, Response<LoginData> response) {
                 if (response.isSuccessful()) {
-                    try {
-                        String s = response.body().string();
-                        Log.e(TAG, "onResponse: 登录：" + s);
-                        LoginData loginData = parseJson2Bean(s, LoginData.class);
-                        if (loginData.getErrorCode() > 0) {
-                            ToastUtils.show(RetrofitActivity.this, "登录成功");
-                            SharedPreferences sp = getSharedPreferences("appsp", MODE_PRIVATE);
-                            SharedPreferences.Editor editor = sp.edit();
-                            editor.putInt("userid", loginData.getUser().getTPIUserId());
-                            editor.putString("token", loginData.getUser().getTicketToken());
-                            editor.apply();
-                        }
-                    } catch (IOException e) {
-                        e.printStackTrace();
+//                    try {
+//                        String s = response.body().string();
+//                        Log.e(TAG, "onResponse: 登录：" + s);
+//                        LoginData loginData = parseJson2Bean(s, LoginData.class);
+//                        if (loginData.getErrorCode() > 0) {
+//                            ToastUtils.show(RetrofitActivity.this, "登录成功");
+//                            SharedPreferences sp = getSharedPreferences("appsp", MODE_PRIVATE);
+//                            SharedPreferences.Editor editor = sp.edit();
+//                            editor.putInt("userid", loginData.getUser().getTPIUserId());
+//                            editor.putString("token", loginData.getUser().getTicketToken());
+//                            editor.apply();
+//                        }
+//                    } catch (IOException e) {
+//                        e.printStackTrace();
+//                    }
+
+                    LoginData body = response.body();
+                    if (body.getErrorCode() > 0) {
+                        ToastUtils.show(RetrofitActivity.this, "登录成功");
+                        SharedPreferences sp = getSharedPreferences("appsp", MODE_PRIVATE);
+                        SharedPreferences.Editor editor = sp.edit();
+                        Log.e(TAG, "userid&token: " + body.getUser().getTPIUserId() + "\n" +
+                                body.getUser().getTicketToken());
+                        editor.putInt("userid", body.getUser().getTPIUserId());
+                        editor.putString("token", body.getUser().getTicketToken());
+                        editor.apply();
                     }
                 }
             }
 
             @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
+            public void onFailure(Call<LoginData> call, Throwable t) {
                 t.printStackTrace();
             }
         });
     }
 
+    /**
+     * post带请求头测试
+     */
     private void postTest() {
         SharedPreferences sp = getSharedPreferences("appsp", MODE_PRIVATE);
         int userid = sp.getInt("userid", 0);
@@ -114,12 +181,6 @@ public class RetrofitActivity extends AppCompatActivity implements View.OnClickL
 //            OkHttpClient client = new OkHttpClient.Builder()
 //                    .addInterceptor(new RetrofitInterceptor(token))
 //                    .build();
-            Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl(ApiStore.baseUrl)
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .callFactory(OkHttpUtils.obtainOkHttpClient(token))
-                    .build();
-            ApiStore apiStore = retrofit.create(ApiStore.class);
             Call<ResponseBody> call = apiStore.addAddress(bean, header);
             call.enqueue(new Callback<ResponseBody>() {
                 @Override

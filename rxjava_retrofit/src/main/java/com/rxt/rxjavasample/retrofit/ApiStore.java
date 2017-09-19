@@ -20,7 +20,7 @@ public interface ApiStore {
     Call<ResponseBody> getSolutions(@Query("page")int page);
 
     @GET("api/Login/GetLogin")
-    Call<ResponseBody> getUserInfo(@Query("strUserName")String userName,
+    Call<LoginData> getUserInfo(@Query("strUserName")String userName,
                              @Query("strPwd")String password);
 
     @GET("weather_mini")
@@ -29,4 +29,7 @@ public interface ApiStore {
     //    Call<ResponseBody> addAddress(@Header("Authorization")String header, @Body AddressBean bean);
     @POST("api/User/PostInsertAddress")
     Call<ResponseBody> addAddress(@Body AddressBean bean, @Header("Authorization")String authorization);
+
+    @POST("api/UserQusetions/PostSaveUserQusetion")
+    Call<ResponseBody> release(@Body String bean);
 }

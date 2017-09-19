@@ -2,11 +2,8 @@ package com.rxt.rxjavasample.retrofit;
 
 import android.util.Log;
 
-import java.io.IOException;
-
-import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
-import okhttp3.Response;
+import okhttp3.logging.HttpLoggingInterceptor;
 
 /**
  * 生成OkHttpClient
@@ -15,19 +12,46 @@ import okhttp3.Response;
 
 public class OkHttpUtils {
 
-    private static OkHttpClient client;
+    private static OkHttpUtils mInstance;
 
-    public static OkHttpClient obtainOkHttpClient(String token) {
+    private OkHttpUtils() {}
+
+    public static OkHttpUtils getInstance() {
+        if (mInstance == null) {
+            mInstance = new OkHttpUtils();
+        }
+        return mInstance;
+    }
+
+    private OkHttpClient client;
+
+    public OkHttpClient obtainOkHttpClient() {
         if (client == null) {
-            client = new OkHttpClient.Builder().addInterceptor(new Interceptor() {
-                @Override
-                public Response intercept(Chain chain) throws IOException {
-                    String headers = chain.request().headers().toString();
-                    Log.e("拦截器", "intercept: " + headers);
-                    return chain.proceed(chain.request());
-                }
-            }).build();
+            HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor(new HttpLogger());
+            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+            client = new OkHttpClient.Builder()
+                    .addNetworkInterceptor(loggingInterceptor)
+//                    .addInterceptor(new Interceptor() {
+//                @Override
+//                public Response intercept(Chain chain) throws IOException {
+//                    Request orginalRequest = chain.request();
+//                    String headers = orginalRequest.headers().toString();
+//                    Log.e("拦截器", "intercept: " + headers);
+//                    Log.e("请求体", orginalRequest.body().contentLength()
+//                            + "******" + orginalRequest.body().contentType());
+//                    return chain.proceed(orginalRequest);
+//                }
+//            })
+                    .build();
         }
         return client;
+    }
+
+    public class HttpLogger implements HttpLoggingInterceptor.Logger {
+
+        @Override
+        public void log(String message) {
+            Log.e("网络日志打印", "log: " + message);
+        }
     }
 }
