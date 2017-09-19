@@ -145,7 +145,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //                    }
 //                });
 
-        //interval,间隔发送long类型的数据，从0l开始
+        //interval,间隔发送long类型的数据，从0L开始, 可用于计时
         Observable.interval(0, 2, TimeUnit.SECONDS)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
