@@ -1,4 +1,4 @@
-package com.rxt.retrofit;
+package com.rxt.retrofit.model;
 
 import java.util.List;
 

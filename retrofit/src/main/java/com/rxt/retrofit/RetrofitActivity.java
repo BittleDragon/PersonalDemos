@@ -10,6 +10,10 @@ import android.widget.Button;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.rxt.retrofit.model.AddressBean;
+import com.rxt.retrofit.model.AreaJsonBean;
+import com.rxt.retrofit.model.LoginData;
+import com.rxt.retrofit.model.ReleaseBean;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -21,7 +25,6 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
-import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
@@ -32,7 +35,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class RetrofitActivity extends AppCompatActivity implements View.OnClickListener {
 
     public static final String TAG = "RetrofitActivity";
-    private ApiStore apiStore;
+    private ApiManager apiManager;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -48,13 +51,12 @@ public class RetrofitActivity extends AppCompatActivity implements View.OnClickL
         postNormal.setOnClickListener(this);
 
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(ApiStore.baseUrl)
+                .baseUrl(ApiManager.baseUrl)
                 .addConverterFactory(new MyConverterFactory())
-                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                 .client(OkHttpUtils.getInstance().obtainOkHttpClient())
 //                .callFactory(OkHttpUtils.getInstance().obtainOkHttpClient())
                 .build();
-        apiStore = retrofit.create(ApiStore.class);
+        apiManager = retrofit.create(ApiManager.class);
     }
 
     @Override
@@ -93,7 +95,7 @@ public class RetrofitActivity extends AppCompatActivity implements View.OnClickL
             e.printStackTrace();
         }
 
-        Call<ResponseBody> releaseCall = apiStore.release(jsonObject.toString());
+        Call<ResponseBody> releaseCall = apiManager.release(jsonObject.toString());
         releaseCall.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -119,7 +121,7 @@ public class RetrofitActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private void login() {
-        Call<LoginData> loginCall = apiStore.getUserInfo("hzcm", "123123");
+        Call<LoginData> loginCall = apiManager.getUserInfo("hzcm", "123123");
         loginCall.enqueue(new Callback<LoginData>() {
             @Override
             public void onResponse(Call<LoginData> call, Response<LoginData> response) {
@@ -164,7 +166,7 @@ public class RetrofitActivity extends AppCompatActivity implements View.OnClickL
 //            OkHttpClient client = new OkHttpClient.Builder()
 //                    .addInterceptor(new RetrofitInterceptor(token))
 //                    .build();
-            Call<ResponseBody> call = apiStore.addAddress(bean, header);
+            Call<ResponseBody> call = apiManager.addAddress(bean, header);
             call.enqueue(new Callback<ResponseBody>() {
                 @Override
                 public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -194,10 +196,10 @@ public class RetrofitActivity extends AppCompatActivity implements View.OnClickL
           无参数
          */
 //        Retrofit retrofit = new Retrofit.Builder()
-//                .baseUrl(ApiStore.baseUrl)
+//                .baseUrl(ApiManager.baseUrl)
 //                .build();
-//        ApiStore apiStore = retrofit.create(ApiStore.class);
-//        Call<ResponseBody> call = apiStore.getHomeData();
+//        ApiManager apiManager = retrofit.create(ApiManager.class);
+//        Call<ResponseBody> call = apiManager.getHomeData();
 //        call.enqueue(new Callback<ResponseBody>() {
 //            @Override
 //            public void onResponse
@@ -241,7 +243,7 @@ public class RetrofitActivity extends AppCompatActivity implements View.OnClickL
         /*
         有参数
          */
-//        Call<ResponseBody> solutionsCall = apiStore.getSolutions(page++);
+//        Call<ResponseBody> solutionsCall = apiManager.getSolutions(page++);
 //        solutionsCall.enqueue(new Callback<ResponseBody>() {
 //            @Override
 //            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -271,7 +273,7 @@ public class RetrofitActivity extends AppCompatActivity implements View.OnClickL
                 .baseUrl("http://wthrcdn.etouch.cn/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
-        ApiStore apis = retro.create(ApiStore.class);
+        ApiManager apis = retro.create(ApiManager.class);
         Call<AreaJsonBean> weatherCall = apis.getWeather("杭州");
         weatherCall.enqueue(new Callback<AreaJsonBean>() {
             @Override

@@ -1,4 +1,4 @@
-package com.rxt.retrofit;
+package com.rxt.retrofit.model;
 
 /**
  * 地址bean类
