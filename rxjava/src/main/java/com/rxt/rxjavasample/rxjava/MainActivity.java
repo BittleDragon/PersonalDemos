@@ -5,7 +5,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 
+import com.jakewharton.rxbinding2.widget.RxTextView;
 import com.rxt.rxjavasample.R;
 
 import org.reactivestreams.Subscriber;
@@ -30,23 +32,33 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.BiFunction;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
+import io.reactivex.functions.Predicate;
 import io.reactivex.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static final String TAG = "Rxjava";
+    private Button primary;
+    private Button mapOperation;
+    private Button zipbtn;
+    private Button sampleFilter;
+    private Button flowable;
+    private Button concat;
+    private Button allinOne;
+    private EditText etSearch;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Button primary = (Button) findViewById(R.id.btn_primary);
-        Button mapOperation = (Button) findViewById(R.id.btn_map);
-        Button zipbtn = (Button) findViewById(R.id.btn_zip);
-        Button sampleFilter = (Button) findViewById(R.id.btn_sample_filter);
-        Button flowable = (Button) findViewById(R.id.btn_flowable);
-        Button concat = (Button) findViewById(R.id.btn_concat);
-        Button allinOne = (Button) findViewById(R.id.btn_all_in_one);
+        primary = (Button) findViewById(R.id.btn_primary);
+        mapOperation = (Button) findViewById(R.id.btn_map);
+        zipbtn = (Button) findViewById(R.id.btn_zip);
+        sampleFilter = (Button) findViewById(R.id.btn_sample_filter);
+        flowable = (Button) findViewById(R.id.btn_flowable);
+        concat = (Button) findViewById(R.id.btn_concat);
+        allinOne = (Button) findViewById(R.id.btn_all_in_one);
+        etSearch = (EditText) findViewById(R.id.et_search);
         primary.setOnClickListener(this);
         mapOperation.setOnClickListener(this);
         zipbtn.setOnClickListener(this);
@@ -55,6 +67,69 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         concat.setOnClickListener(this);
         allinOne.setOnClickListener(this);
 
+        initSearch();
+
+    }
+
+    /**
+     * 使用debounce和switchMap操作符优化app搜索联想功能
+     */
+    private void initSearch() {
+        RxTextView.textChanges(etSearch)
+                .subscribeOn(Schedulers.io())
+                /*debounce原理类似于我们在收到请求之后，发送一个延时消息给下游，如果在这段延时时间
+                内没有收到新的请求，那么下游就会收到该消息；而如果在这段延时时间内收到来新的请求，
+                那么就会取消之前的消息，并重新发送一个新的延时消息，以此类推。
+                而如果在这段时间内，上游发送了onComplete消息，那么即使没有到达需要等待的时间，
+                下游也会立刻收到该消息。
+                */
+                .debounce(400, TimeUnit.MILLISECONDS)
+                .filter(new Predicate<CharSequence>() {
+                    @Override
+                    public boolean test(CharSequence charSequence) throws Exception {
+                        return charSequence.toString().trim().length() > 0;
+                    }
+                })
+                /*
+                只取最后输入的内容进行搜索, 防止出现比如停止输入400毫秒后, 那么肯定会开始请求Search
+                接口, 但是用户又会输入新的关键字,这个时候上个请求还没有返回, 新的请求又去请求Search
+                接口.这个时候有可能最后的一个请求返回, 第一个请求最后返回,导致最终显示的结果
+                是第一次搜索的结果.也就是说，当400毫秒后，发出第一个搜索请求，当这个请求的过程中，
+                用户又去搜索了，发出第二个请求，不管怎样，switchMap操作符只会发射第二次请求的Observable。
+                */
+                .switchMap(new Function<CharSequence, ObservableSource<String>>() {
+                    @Override
+                    public ObservableSource<String> apply(final CharSequence charSequence) throws Exception {
+                        return Observable.create(new ObservableOnSubscribe<String>() {
+                            @Override
+                            public void subscribe(ObservableEmitter<String> e) throws Exception {
+                                e.onNext(charSequence.toString());
+                            }
+                        });
+                    }
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<String>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onNext(String value) {
+                        Log.e(TAG, "onNext: 搜索的内容：" + value);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
     }
 
     @Override

@@ -43,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
                 .client(OkHttpUtils.getInstance().obtainOkHttpClient())
                 .build();
         apiManager = retrofit.create(ApiManager.class);
+
     }
 
     @OnClick(R.id.btn_test)
@@ -51,11 +52,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * 结合rxjava请求
+     * retryWhen, 出错请求测试
      */
     private void testRxRetro() {
         Observable<NewsBean> newsCall = apiManager.getNews("Android", 10, 1);
         newsCall.subscribeOn(Schedulers.io())
+                .retryWhen(new RetryObservable(3000, 3))
                 .observeOn(AndroidSchedulers.mainThread())
                 .concatMap(new Function<NewsBean, ObservableSource<String>>() {
                     @Override
