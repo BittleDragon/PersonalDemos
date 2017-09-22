@@ -17,6 +17,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.FlowableEmitter;
@@ -26,6 +29,7 @@ import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
+import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
@@ -35,40 +39,110 @@ import io.reactivex.functions.Function;
 import io.reactivex.functions.Predicate;
 import io.reactivex.schedulers.Schedulers;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "Rxjava";
-    private Button primary;
-    private Button mapOperation;
-    private Button zipbtn;
-    private Button sampleFilter;
-    private Button flowable;
-    private Button concat;
-    private Button allinOne;
-    private EditText etSearch;
+    @BindView(R.id.btn_primary)
+    Button btnPrimary;
+    @BindView(R.id.btn_map)
+    Button btnMap;
+    @BindView(R.id.btn_zip)
+    Button btnZip;
+    @BindView(R.id.btn_sample_filter)
+    Button btnSampleFilter;
+    @BindView(R.id.btn_flowable)
+    Button btnFlowable;
+    @BindView(R.id.btn_concat)
+    Button btnConcat;
+    @BindView(R.id.btn_all_in_one)
+    Button btnAllInOne;
+    @BindView(R.id.et_search)
+    EditText etSearch;
+    @BindView(R.id.btn_first)
+    Button btnFirst;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        primary = (Button) findViewById(R.id.btn_primary);
-        mapOperation = (Button) findViewById(R.id.btn_map);
-        zipbtn = (Button) findViewById(R.id.btn_zip);
-        sampleFilter = (Button) findViewById(R.id.btn_sample_filter);
-        flowable = (Button) findViewById(R.id.btn_flowable);
-        concat = (Button) findViewById(R.id.btn_concat);
-        allinOne = (Button) findViewById(R.id.btn_all_in_one);
-        etSearch = (EditText) findViewById(R.id.et_search);
-        primary.setOnClickListener(this);
-        mapOperation.setOnClickListener(this);
-        zipbtn.setOnClickListener(this);
-        sampleFilter.setOnClickListener(this);
-        flowable.setOnClickListener(this);
-        concat.setOnClickListener(this);
-        allinOne.setOnClickListener(this);
-
+        ButterKnife.bind(this);
         initSearch();
 
+    }
+
+    @OnClick({R.id.btn_primary, R.id.btn_map, R.id.btn_zip, R.id.btn_sample_filter,
+            R.id.btn_flowable, R.id.btn_concat, R.id.btn_all_in_one, R.id.btn_first})
+    public void onViewClicked(View view) {
+        switch (view.getId()) {
+            case R.id.btn_primary:
+                primary();
+                break;
+            case R.id.btn_map:
+                mapTest(2);
+                break;
+            case R.id.btn_zip:
+                zipTest();
+                break;
+            case R.id.btn_sample_filter:
+                sampleOrFilter();
+                break;
+            case R.id.btn_flowable:
+                //更详细的使用在FlowableTestClass
+                flowableTest();
+                break;
+            case R.id.btn_concat:
+                concatTest();
+                break;
+            case R.id.btn_all_in_one:
+                test();
+                break;
+            case R.id.btn_first:
+                first();
+                break;
+        }
+    }
+
+    private void first() {
+        final String TAG = "firstTest";
+        Observable<Object> observable1 = Observable.create(new ObservableOnSubscribe<Object>() {
+            @Override
+            public void subscribe(@NonNull ObservableEmitter<Object> e) throws Exception {
+                e.onNext(1);
+                e.onComplete();
+            }
+        });
+        Observable<Object> observable2 = Observable.create(new ObservableOnSubscribe<Object>() {
+            @Override
+            public void subscribe(@NonNull ObservableEmitter<Object> e) throws Exception {
+                e.onNext("彩云之南");
+                e.onComplete();
+            }
+        });
+        Observable.concat(observable1, observable2)
+                .first("默认数据")//取第一个收到的数据，如果两个数据源都没有发射数据，则发射“默认数据”
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new SingleObserver<Object>() {
+                    @Override
+                    public void onSubscribe(@NonNull Disposable d) {
+                        Log.e(TAG, "onSubscribe");
+                    }
+
+                    @Override
+                    public void onSuccess(@NonNull Object o) {
+                        if (o instanceof Integer) {
+                            Log.e(TAG, "onSuccess: 数字：" + o);
+                        }else {
+                            Log.e(TAG, "onSuccess: 字符串：" + o);
+                        }
+                    }
+
+                    @Override
+                    public void onError(@NonNull Throwable e) {
+
+                    }
+                });
     }
 
     /**
@@ -132,34 +206,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 });
     }
 
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.btn_primary:
-                primary();
-                break;
-            case R.id.btn_map:
-                mapTest(2);
-                break;
-            case R.id.btn_zip:
-                zipTest();
-                break;
-            case R.id.btn_sample_filter:
-                sampleOrFilter();
-                break;
-            case R.id.btn_flowable:
-                flowableTest();
-                break;
-            case R.id.btn_concat:
-                concatTest();
-                break;
-            case R.id.btn_all_in_one:
-                test();
-                break;
-        }
-
-    }
-
     private void test() {
         //distinct
 //        Observable.create(new ObservableOnSubscribe<String>() {
@@ -221,7 +267,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //                });
 
         //interval,间隔发送long类型的数据，从0L开始, 可用于计时
-        Observable.interval(0, 2, TimeUnit.SECONDS)
+        Observable.interval(2, TimeUnit.SECONDS)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<Long>() {
@@ -250,7 +296,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         Log.e(TAG, "onComplete: ");
                     }
                 });
-
 
 
     }
@@ -284,6 +329,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         Log.e(TAG, "accept: " + integer);
                     }
                 });
+
     }
 
     private void flowableTest() {

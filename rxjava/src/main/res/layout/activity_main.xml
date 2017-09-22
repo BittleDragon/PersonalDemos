@@ -1,56 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:gravity="center">
+    android:layout_height="match_parent">
     
-    <Button
-        android:id="@+id/btn_primary"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="基本用法"/>
-    
-    <Button
-        android:id="@+id/btn_map"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="map操作符"/>
-
-    <Button
-        android:id="@+id/btn_zip"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="zip操作符"/>
-    
-    <Button
-        android:id="@+id/btn_sample_filter"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="sample/filter"/>
-    
-    <Button
-        android:id="@+id/btn_flowable"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="flowable"/>
-    
-    <Button
-        android:id="@+id/btn_concat"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="concat"/>
-    
-    <Button
-        android:id="@+id/btn_all_in_one"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="all in one"/>
-    
-    <EditText
-        android:id="@+id/et_search"
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="请输入搜索内容"
-        android:textSize="14sp"/>
-</LinearLayout>
+        android:gravity="center">
+        
+        <Button
+            android:id="@+id/btn_primary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="基本用法"/>
+        
+        <Button
+            android:id="@+id/btn_map"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="map操作符"/>
+        
+        <Button
+            android:id="@+id/btn_zip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="zip操作符"/>
+        
+        <Button
+            android:id="@+id/btn_sample_filter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="sample/filter"/>
+        
+        <Button
+            android:id="@+id/btn_flowable"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="flowable"/>
+        
+        <Button
+            android:id="@+id/btn_concat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="concat"/>
+        
+        <Button
+            android:id="@+id/btn_all_in_one"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="all in one"/>
+        
+        <Button
+            android:id="@+id/btn_first"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="first/take first"/>
+        
+        <EditText
+            android:id="@+id/et_search"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="请输入搜索内容"
+            android:textSize="14sp"/>
+    </LinearLayout>
+</ScrollView>
