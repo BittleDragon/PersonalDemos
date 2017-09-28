@@ -16,7 +16,10 @@ import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
+
+import com.rxt.widgettestsample.dialog.DialogActivity;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,6 +38,8 @@ public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_CAMERA = 1;
     @BindView(R.id.btn_take_photo)
     Button btnTakePhoto;
+    @BindView(R.id.btn_open_dialog)
+    Button btnDialog;
     private File tempFile;
 
     @Override
@@ -43,14 +48,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-    }
-
-    @OnClick(R.id.btn_take_photo)
-    public void onViewClicked() {
-        if (Build.VERSION.SDK_INT >= 23) {
-            checkPermissionsInNeed();
-        } else
-            capture();
     }
 
     private void checkPermissionsInNeed() {
@@ -147,6 +144,21 @@ public class MainActivity extends AppCompatActivity {
                 grantResults[1] == PackageManager.PERMISSION_GRANTED) {
             //已授权
             capture();
+        }
+    }
+
+    @OnClick({R.id.btn_take_photo, R.id.btn_open_dialog})
+    public void onViewClicked(View view) {
+        switch (view.getId()) {
+            case R.id.btn_take_photo:
+                if (Build.VERSION.SDK_INT >= 23) {
+                    checkPermissionsInNeed();
+                } else
+                    capture();
+                break;
+            case R.id.btn_open_dialog:
+                startActivity(new Intent(this, DialogActivity.class));
+                break;
         }
     }
 }

@@ -7,18 +7,20 @@
     android:visible="true"
     android:repeatMode="restart"
     android:repeatCount="infinite">
+    
+    <bitmap android:src="@drawable/loading_icon"/>
 
-    <shape
-        android:shape="ring"
-        android:innerRadiusRatio="3"
-        android:thicknessRatio="20"
-        android:useLevel="false">
+    <!--<shape-->
+        <!--android:shape="ring"-->
+        <!--android:innerRadiusRatio="3"-->
+        <!--android:thicknessRatio="20"-->
+        <!--android:useLevel="false">-->
 
-        <!--<solid android:color="#ee3320"/>-->
+        <!--&lt;!&ndash;<solid android:color="#ee3320"/>&ndash;&gt;-->
 
-        <gradient android:endColor="#2F90BD"
-            android:startColor="#FFFFFF"
-            android:type="sweep"/>
+        <!--<gradient android:endColor="#2F90BD"-->
+            <!--android:startColor="#FFFFFF"-->
+            <!--android:type="sweep"/>-->
 
-    </shape>
+    <!--</shape>-->
 </rotate>

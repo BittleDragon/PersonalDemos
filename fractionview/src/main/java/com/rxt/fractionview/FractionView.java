@@ -14,8 +14,8 @@ import android.view.View;
 
 public class FractionView extends View {
 
-    public static final String TAG = "分数控件";
-    public static final String TAG2 = "文字宽高";
+//    public static final String TAG = "分数控件";
+//    public static final String TAG2 = "文字宽高";
     public static final int DEFAULT_TEXTSIZE = 14;
 
     private int textSize = sp2px(DEFAULT_TEXTSIZE);
