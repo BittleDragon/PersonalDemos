@@ -36,13 +36,11 @@ public class DialogActivity extends AppCompatActivity {
 
     private void initDialog() {
         dialog = new CustomDialog(this);
-//        dialog.setCancelable(false);
         View view = View.inflate(this, R.layout.loading, null);
         ImageView loadingIcon = (ImageView) view.findViewById(R.id.iv_loading);
         AnimationDrawable anim = (AnimationDrawable) loadingIcon.getDrawable();
         anim.start();
         dialog.setContentView(view);
-//        dialog.setContentView(R.layout.loading);
     }
 
     @OnClick(R.id.btn_dialog)
