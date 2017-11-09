@@ -308,6 +308,7 @@ public class MainActivity extends AppCompatActivity {
                 e.onNext(2);
                 e.onNext(3);
                 e.onNext(4);
+                Thread.sleep(2000);
                 e.onComplete();
             }
         });

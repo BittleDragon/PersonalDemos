@@ -79,7 +79,7 @@ public class CustomDialog extends Dialog {
 //            this.context = context;
 //        }
 //
-//        public CustomDialog build() {
+//        public CustomDialog hellotest() {
 //            return new CustomDialog(context);
 //        }
 //    }

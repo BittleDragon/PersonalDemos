@@ -1,0 +1,37 @@
+def a = 1
+def b = "hellotest"
+
+def test() {
+    def a = 1
+    def b = "hello"
+    def c = "a=${a}, b=${b}"
+    println c
+}
+
+//闭包
+def sum = {c,d ->
+    println c + d //省略方法的括号
+}
+
+def list = {
+    def test = [100, 200, 300]
+    test << 600
+    test.each {
+        println it/100
+    }
+}
+
+def map = {
+    def testMap = [1:"good", "2":"day", 3:"commander"]
+    testMap.each {
+        def result = ""
+        println result += it.value + " "
+    }
+}
+
+task(groovy) {
+//    test()
+//    sum.call(512, 512)
+//    list()
+    map()
+}
